@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'barang_Tani_Card.dart';
 
+void main() {
+  runApp(const MyApp());
+}
+
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
@@ -10,6 +14,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   late TextEditingController _controller;
   String kataCari = '';
+  String kategoriTerpilih = 'Semua';
   final List<BarangTani> barangTaniList = [
     BarangTani(nama: 'Bibit Padi', kategori: 'Bibit', harga: 10000, satuan: 'Karung', stok: 10, ),
     BarangTani(nama: 'Bibit Jagung', kategori: 'Bibit', harga: 8000, satuan: 'Karung', stok: 20, ),
@@ -31,27 +36,82 @@ class _MyAppState extends State<MyApp> {
     _controller.dispose();
     super.dispose();
   }
+  List<String> get daftarKategori {
+    final unik = barangTaniList.map((barang) => barang.kategori).toSet().toList();
+    return ['Semua', ...unik];
+  }
   @override
   Widget build(BuildContext context) {
-    final hasilCari = barangTaniList.where(
-      (barang) => barang.nama.toLowerCase().contains(
-      kataCari.toLowerCase())).toList();
+    final hasilCari = barangTaniList.where ((barang) {
+      final cocokKategori = kategoriTerpilih == 'Semua' || barang.kategori == kategoriTerpilih;
+      final kunci = kataCari.toLowerCase();
+      final cocokKataKunci = kunci.isEmpty ||
+        barang.nama.toLowerCase().contains(kunci) ||
+        barang.kategori.toLowerCase().contains(kunci);
+      return cocokKategori && cocokKataKunci;
+    }).toList();
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(title: const Text('Tani Maju Jaya')),
+        backgroundColor: const Color(0xFFEF5350),
+         endDrawer: Drawer(
+          child: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Color(0xFFE53935),
+                  Color(0xFFFFA726),
+                ],
+              ),
+            ),
+            child: SafeArea(
+              child: ListView(
+                padding: const EdgeInsets.all(16.0),
+                children: [
+                  _menuItem('Beranda'),
+                  const SizedBox(height: 12.0),
+                  _menuItem('Produk Saya'),
+                  const SizedBox(height: 12.0),
+                  _menuItem('Pengaturan'),
+                ],
+              ),
+            ),
+          ),
+        ),
+        appBar: AppBar(
+          backgroundColor: const Color(0xFFE53935),
+          title : Row(children: const [
+            Icon(Icons.eco, color: Colors.white),
+            SizedBox(width: 8.0),
+            Text('Tani Maju Jaya', style: TextStyle(fontWeight: FontWeight.bold)),
+          ],
+          ),
+        ),
         body: Column(
           children: [
-            TextField(
-              controller: _controller,
-              decoration: const InputDecoration(
-                labelText: 'Cari Barang',
+            Padding(padding: const EdgeInsets.all(16.0),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20.0),
               ),
-              onChanged: (value) {
-                setState(() {
-                  kataCari = value;
-                });
-              },
+              child:TextField(
+                controller: _controller,
+                decoration: const InputDecoration(
+                  hintText: 'Cari barang tani...',
+                  prefixIcon: Icon(Icons.search),
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+                 ),
+                 onChanged: (value) {
+                  setState(() {
+                    kataCari = value;
+                  });
+                 },
+              ),),
             ),
+            
             Expanded(
               child: LayoutBuilder(
                 builder:(context, constraints) {
@@ -66,7 +126,7 @@ class _MyAppState extends State<MyApp> {
                   return GridView.builder(
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: kolom,
-                      childAspectRatio: 3,
+                      childAspectRatio: 3 / 2,
                     ),
                     itemCount: hasilCari.length,
                     itemBuilder: (context, index) {
