@@ -88,64 +88,143 @@ class _MyAppState extends State<MyApp> {
           ],
           ),
         ),
+        
         body: Column(
           children: [
-            Padding(padding: const EdgeInsets.all(16.0),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20.0),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20.0),
+                ),
+                child:TextField(
+                  controller: _controller,
+                  decoration: const InputDecoration(
+                    hintText: 'Cari barang tani...',
+                    prefixIcon: Icon(Icons.search),
+                    border: InputBorder.none,
+                    contentPadding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+                  ),
+                  onChanged: (value) {
+                    setState(() {
+                      kataCari = value;
+                    });
+                  },
+                ),
               ),
-              child:TextField(
-                controller: _controller,
-                decoration: const InputDecoration(
-                  hintText: 'Cari barang tani...',
-                  prefixIcon: Icon(Icons.search),
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-                 ),
-                 onChanged: (value) {
-                  setState(() {
-                    kataCari = value;
-                  });
-                 },
-              ),),
             ),
             
-            Expanded(
-              child: LayoutBuilder(
-                builder:(context, constraints) {
-                  int kolom;
-                  if (constraints.maxWidth < 600) {
-                    kolom = 1;
-                  } else if (constraints.maxWidth < 900) {
-                    kolom = 2;
-                  } else {
-                    kolom = 3;
-                  }
-                  return GridView.builder(
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: kolom,
-                      childAspectRatio: 3 / 2,
-                    ),
-                    itemCount: hasilCari.length,
-                    itemBuilder: (context, index) {
-                      final barang = hasilCari[index];
-                      return BarangTaniCard(
-                        nama: barang.nama,
-                        kategori: barang.kategori,
-                        harga: barang.harga,
-                        satuan: barang.satuan,
-                        stok: barang.stok,
-                      );
-                    },
-                  );
-                },
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: daftarKategori.map((kategori) {
+                    final terpilih = kategori == kategoriTerpilih;
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                        backgroundColor: terpilih ? Colors.deepOrange : Colors.orange,
+                        foregroundColor: Colors.white,
+                      ),
+                      onPressed: () {
+                        setState(() => kategoriTerpilih = kategoriTerpilih = kategori);
+                        },
+                        child: Text(kategori),  
+                      ),
+                    );
+                  }).toList(),
+                ),
               ),
             ),
-          ]
-        )
-      )
+
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12.0),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text('Menampilkan ${hasilCari.length} barang',
+                  style: const TextStyle(color: Colors.white)),
+                ),
+              ),
+              const SizedBox(height: 6.0),
+
+            Expanded(
+              child: Container(
+                margin: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(6.0),
+                decoration : BoxDecoration(
+                  color: const Color(0xFFE53935),
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                child: hasilCari.isEmpty
+                  ? Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.search_off, size: 48, color: Colors.white.withOpacity(0.8)),
+                        const SizedBox(height: 12),
+                        const Text(
+                          'Barang tidak ditemukan',
+                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Coba ubah kata kunci atau pilih kategori lain',
+                          style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 12),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  )
+                : LayoutBuilder(
+                  builder: (context, constraints) {
+                    int kolom;
+                    if (constraints.maxWidth < 600) {
+                      kolom = 1;
+                    } else if (constraints.maxWidth < 900) {
+                      kolom = 2;
+                    } else {
+                      kolom = 3;
+                    }
+                    return GridView.builder(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: kolom,
+                        childAspectRatio: 3 / 4,
+                        crossAxisSpacing: 6,
+                        mainAxisSpacing: 6,
+                        ),
+                        itemCount:  hasilCari.length,
+                        itemBuilder: (context, index) {
+                          final barang = hasilCari[index];
+                          return BarangTaniCard(
+                            nama: barang.nama, 
+                            kategori: barang.kategori, 
+                            harga: barang.harga, 
+                            satuan: barang.satuan, 
+                            stok: barang.stok,
+                          );
+                        },
+                    );
+                  },
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+  Widget _menuItem(String label) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+      decoration: BoxDecoration(
+        color:  Colors.white,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(label, style:  const TextStyle(color: Colors.black87)),
     );
   }
 }
