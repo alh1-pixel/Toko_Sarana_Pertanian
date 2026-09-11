@@ -84,7 +84,7 @@ class _MyAppState extends State<MyApp> {
           title : Row(children: const [
             Icon(Icons.eco, color: Colors.white),
             SizedBox(width: 8.0),
-            Text('Tani Maju Jaya', style: TextStyle(fontWeight: FontWeight.bold)),
+            Text('Tani Maju Jaya', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
           ],
           ),
         ),
@@ -101,10 +101,10 @@ class _MyAppState extends State<MyApp> {
                 child:TextField(
                   controller: _controller,
                   decoration: const InputDecoration(
-                    hintText: 'Cari barang tani...',
+                    hintText: 'Cari barang tani',
                     prefixIcon: Icon(Icons.search),
                     border: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0),
                   ),
                   onChanged: (value) {
                     setState(() {
@@ -192,7 +192,7 @@ class _MyAppState extends State<MyApp> {
                     return GridView.builder(
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: kolom,
-                        childAspectRatio: 3 / 4,
+                        childAspectRatio: 4 / 3,
                         crossAxisSpacing: 6,
                         mainAxisSpacing: 6,
                         ),
