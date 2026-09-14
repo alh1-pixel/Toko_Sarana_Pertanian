@@ -29,6 +29,7 @@ class BarangTaniCard extends StatelessWidget {
   final String satuan;
   final int stok;
   final String? gambar;
+  final void Function(int jumlahBaru)? onJumlahBerubah;
 
   const BarangTaniCard({
     super.key,
@@ -38,6 +39,7 @@ class BarangTaniCard extends StatelessWidget {
     required this.satuan,
     required this.stok,
     this.gambar,
+    this.onJumlahBerubah,
   });
   
   IconData getIkonKategori(String kategori) {
@@ -116,6 +118,7 @@ class BarangTaniCard extends StatelessWidget {
               nama: nama, 
               stok: stok, 
               harga: harga,
+              onJumlahBerubah: onJumlahBerubah,
               onBeli: (jumlahBeli, totalBeli) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
@@ -141,7 +144,7 @@ class BarangTaniCard extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                'Total: Rp ${totalBeli.toStringAsFixed(0)}',
+                                'Total: Rp ${formatRupiah(totalBeli)}',
                                 style: TextStyle(
                                   color:  Colors.white.withOpacity(0.9),
                                   fontSize: 12,

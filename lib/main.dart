@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'barang_Tani_Card.dart';
-
+import 'pemilih_Jumlah.dart';
+final GlobalKey<ScaffoldMessengerState> messengerKey = GlobalKey<ScaffoldMessengerState>();
 void main() {
   runApp(const MyApp());
 }
@@ -15,6 +16,8 @@ class _MyAppState extends State<MyApp> {
   late TextEditingController _controller;
   String kataCari = '';
   String kategoriTerpilih = 'Semua';
+  int resetCounter = 0;
+  final Map <String, int> jumlahTerpilih = {};
   final List<BarangTani> barangTaniList = [
     BarangTani(nama: 'Bibit Padi', kategori: 'Bibit', harga: 10000, satuan: 'Karung', stok: 10, gambar: 'assets/images/Benih_Padi.jpeg' ),
     BarangTani(nama: 'Bibit Jagung', kategori: 'Bibit', harga: 8000, satuan: 'Karung', stok: 20, gambar: 'assets/images/Benih_Jagung.jpeg' ),
@@ -40,6 +43,17 @@ class _MyAppState extends State<MyApp> {
     final unik = barangTaniList.map((barang) => barang.kategori).toSet().toList();
     return ['Semua', ...unik];
   }
+  int get jumlahJenisDipilih => jumlahTerpilih.values.where((j) => j > 0).length;
+  int get totalBanyakBarang => jumlahTerpilih.values.fold(0, (a, b) => a + b);
+  double get totalHargaKeseluruhan {
+    double total = 0;
+    jumlahTerpilih.forEach((nama, jumlah) {
+      if (jumlah <= 0) return;
+      final barang = barangTaniList.firstWhere((b) => b.nama == nama);
+      total += hitungTotalHarga(jumlah, barang.harga);
+    });
+    return total;
+  }
   @override
   Widget build(BuildContext context) {
     final hasilCari = barangTaniList.where ((barang) {
@@ -51,34 +65,10 @@ class _MyAppState extends State<MyApp> {
       return cocokKategori && cocokKataKunci;
     }).toList();
     return MaterialApp(
+      scaffoldMessengerKey: messengerKey,
       home: Scaffold(
         backgroundColor: Colors.grey.shade200,
-         endDrawer: Drawer(
-          child: Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Color(0xFFE53935),
-                  Color(0xFFFFA726),
-                ],
-              ),
-            ),
-            child: SafeArea(
-              child: ListView(
-                padding: const EdgeInsets.all(16.0),
-                children: [
-                  _menuItem('Beranda'),
-                  const SizedBox(height: 12.0),
-                  _menuItem('Produk Saya'),
-                  const SizedBox(height: 12.0),
-                  _menuItem('Pengaturan'),
-                ],
-              ),
-            ),
-          ),
-        ),
+        
         appBar: AppBar(
           backgroundColor: const Color(0xFFE53935),
           actionsIconTheme: const IconThemeData(color: Colors.white),
@@ -201,12 +191,18 @@ class _MyAppState extends State<MyApp> {
                         itemBuilder: (context, index) {
                           final barang = hasilCari[index];
                           return BarangTaniCard(
+                            key: ValueKey('${barang.nama}_$resetCounter'),
                             nama: barang.nama, 
                             kategori: barang.kategori, 
                             harga: barang.harga, 
                             satuan: barang.satuan, 
                             stok: barang.stok,
                             gambar: barang.gambar,
+                            onJumlahBerubah:(jumlahBaru) {
+                              setState(() {
+                                jumlahTerpilih[barang.nama] = jumlahBaru;
+                              });
+                            },
                           );
                         },
                     );
@@ -216,17 +212,65 @@ class _MyAppState extends State<MyApp> {
             ),
           ],
         ),
+        floatingActionButton: jumlahJenisDipilih > 0    
+            ? FloatingActionButton.extended(
+                onPressed: () {
+                  final totalBarangDibeli = totalBanyakBarang;
+                  final totalHargaDibeli = totalHargaKeseluruhan;
+
+                  messengerKey.currentState?.showSnackBar(
+                    SnackBar(
+                      backgroundColor: Colors.green.shade700,
+                      behavior: SnackBarBehavior.floating,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      duration: const Duration(seconds: 3),
+                      content: Row(
+                        children: [
+                          const Icon(Icons.check_circle, color: Colors.white),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  'Berhasil membeli $totalBarangDibeli barang',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  'Total: Rp ${formatRupiah(totalHargaDibeli)}',
+                                  style: TextStyle(
+                                    color: Colors.white.withOpacity(0.9),
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+
+                  setState(() {
+                    jumlahTerpilih.clear();
+                    resetCounter++;
+                  });
+                },
+            backgroundColor: Colors.deepOrange.shade700,        
+              icon: const Icon(Icons.shopping_cart_checkout, color: Colors.white),
+              label: Text(
+                'Beli $totalBanyakBarang barang ~ Rp${formatRupiah(totalHargaKeseluruhan)}',
+                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            ),            
+          )
+        : null,
       ),
-    );
-  }
-  Widget _menuItem(String label) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-      decoration: BoxDecoration(
-        color:  Colors.white,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Text(label, style:  const TextStyle(color: Colors.black87)),
     );
   }
 }

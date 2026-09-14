@@ -1,10 +1,34 @@
 import 'package:flutter/material.dart';
 
+double hitungTotalHarga(int jumlah, int hargaSatuan) {
+  double total = (jumlah * hargaSatuan).toDouble();
+   if (jumlah > 25) {
+    return total - (total * 0.10);
+  } else if (jumlah > 10) {
+    return total - (total * 0.05);
+  } else {
+    return total;
+  }
+}
+String formatRupiah(double angka) {
+  final bulat = angka.round().toString();
+  final buffer = StringBuffer();
+  for (int i = 0; i < bulat.length; ++ i){
+    final posisiDariBelakang = bulat.length - i;
+    buffer.write(bulat[i]);
+  if (posisiDariBelakang > 1 && posisiDariBelakang % 3 == 1) {
+    buffer.write('.');
+    }
+  }
+   return buffer.toString();
+}
+
 class PemilihJumlah extends StatefulWidget {
   final int stok;
   final int harga;
   final String nama;
   final void Function(int jumlah, double totalHarga)? onBeli;
+  final void Function(int jumlahBaru)? onJumlahBerubah;
 
   const PemilihJumlah({
     super.key,
@@ -12,6 +36,7 @@ class PemilihJumlah extends StatefulWidget {
     required this.harga,
     required this.nama,
     this.onBeli,
+    this.onJumlahBerubah,
   });
 
   @override
@@ -21,32 +46,10 @@ class PemilihJumlah extends StatefulWidget {
 class _PemilihJumlahState extends State<PemilihJumlah> {
   int jumlah = 0;
 
-  double hitngTotalHarga(int jumlah, int hargaSatuan) {
-    double total = (jumlah * hargaSatuan).toDouble();
-    if (jumlah > 25) {
-      return total - (total * 0.10);
-    } else if (jumlah > 10) {
-      return total - (total * 0.05);
-    } else {
-      return total;
-    }
-  }
-  String formatRupiah(double angka) {
-    final bulat = angka.round().toString();
-    final buffer = StringBuffer();
-    for (int i = 0; i < bulat.length; ++i){
-      final posisiDariBelakang = bulat.length - i;
-      buffer.write(bulat[i]);
-      if (posisiDariBelakang > 1 && posisiDariBelakang % 3 == 1) {
-        buffer.write('.');
-      }
-    }
-    return buffer.toString();
-  }
   @override
   Widget build(BuildContext context) {
    
-  double totalHarga = hitngTotalHarga(jumlah, widget.harga);
+  double totalHarga = hitungTotalHarga(jumlah, widget.harga);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -84,6 +87,7 @@ class _PemilihJumlahState extends State<PemilihJumlah> {
                       setState(() {
                         if (jumlah > 0) jumlah--;
                       });
+                      widget.onJumlahBerubah?.call(jumlah);
                     },
                   ),
                   Container(
@@ -130,6 +134,7 @@ class _PemilihJumlahState extends State<PemilihJumlah> {
                       setState(() {
                         if (jumlah < widget.stok) jumlah++;
                         });
+                        widget.onJumlahBerubah?.call(jumlah);
                     },
                   ),
                 ],
@@ -149,7 +154,14 @@ class _PemilihJumlahState extends State<PemilihJumlah> {
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
             ),
             onPressed: jumlah == 0
-              ? null : () => widget.onBeli?.call(jumlah, totalHarga),
+              ? null 
+              : () {
+                widget.onBeli?.call(jumlah, totalHarga);
+                setState(() {
+                  jumlah = 0;
+                }); 
+                widget.onJumlahBerubah?.call(jumlah);
+              },
             child: const Text('Beli', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
           ),
         ),
