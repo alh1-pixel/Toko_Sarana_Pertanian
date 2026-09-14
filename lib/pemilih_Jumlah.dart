@@ -145,12 +145,12 @@ class _PemilihJumlahState extends State<PemilihJumlah> {
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.orange,
               foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 18),
+              padding: const EdgeInsets.symmetric(vertical: 6),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
             ),
             onPressed: jumlah == 0
               ? null : () => widget.onBeli?.call(jumlah, totalHarga),
-            child: const Text('Beli', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            child: const Text('Beli', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
           ),
         ),
       ],

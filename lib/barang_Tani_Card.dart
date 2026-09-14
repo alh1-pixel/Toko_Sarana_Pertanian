@@ -7,6 +7,7 @@ class BarangTani {
   final int harga;
   final String satuan;
   final int stok;
+  final String? gambar;
 
   BarangTani({
     required this.nama,
@@ -14,6 +15,7 @@ class BarangTani {
     required this.harga,
     required this.satuan,
     required this.stok,
+    this.gambar,
   });
 
   bool isStokHabis() {
@@ -26,6 +28,7 @@ class BarangTaniCard extends StatelessWidget {
   final int harga;
   final String satuan;
   final int stok;
+  final String? gambar;
 
   const BarangTaniCard({
     super.key,
@@ -34,6 +37,7 @@ class BarangTaniCard extends StatelessWidget {
     required this.harga,
     required this.satuan,
     required this.stok,
+    this.gambar,
   });
   
   IconData getIkonKategori(String kategori) {
@@ -60,16 +64,22 @@ class BarangTaniCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [  
-            Container(
-              height: 95,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade300,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child:  Center(
-                child: Icon(getIkonKategori(kategori), size: 32, color:  Colors.grey.shade700),
-              ),
-            ),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: gambar != null
+                ? Image.asset(
+                  gambar!,
+                  height: 110,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                )
+                : Container(
+                  height: 110,
+                  color: Colors.grey.shade300,
+                  child: Center(child: Icon(getIkonKategori(kategori), size:  32, color:  Colors.grey.shade700),
+                  ),
+                ),
+            ),          
             const SizedBox(height: 8),
             Text(
               nama,
@@ -109,7 +119,7 @@ class BarangTaniCard extends StatelessWidget {
               onBeli: (jumlahBeli, totalBeli) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    backgroundColor: Colors.amber.shade700,
+                    backgroundColor: Colors.green.shade700,
                     behavior: SnackBarBehavior.floating,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     duration:  const Duration(seconds: 3),

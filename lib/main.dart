@@ -16,15 +16,15 @@ class _MyAppState extends State<MyApp> {
   String kataCari = '';
   String kategoriTerpilih = 'Semua';
   final List<BarangTani> barangTaniList = [
-    BarangTani(nama: 'Bibit Padi', kategori: 'Bibit', harga: 10000, satuan: 'Karung', stok: 10, ),
-    BarangTani(nama: 'Bibit Jagung', kategori: 'Bibit', harga: 8000, satuan: 'Karung', stok: 20, ),
-    BarangTani(nama: 'Bibit Cabai', kategori: 'Bibit', harga: 15000, satuan: 'Karung', stok: 5, ),
-    BarangTani(nama: 'Pupuk Organik', kategori: 'Pupuk', harga: 20000, satuan: 'Karung', stok: 3, ),
-    BarangTani(nama: 'Tomat', kategori: 'Sayuran', harga: 25000, satuan: 'Bungkus', stok: 0, ),
-    BarangTani(nama: 'Wortel', kategori: 'Sayuran',harga: 30000,satuan: 'Bungkus',stok: 8, ),
-    BarangTani(nama: 'Pupuk NPK', kategori: 'Pupuk', harga: 18000, satuan: 'Karung', stok: 2, ),
-    BarangTani(nama: 'Bibit Bawang Merah', kategori: 'Bibit', harga: 12000, satuan: 'Karung', stok: 0, ),
-    BarangTani(nama: 'Cangkul', kategori: 'Alat', harga: 14000, satuan: 'Buah', stok: 6, ),
+    BarangTani(nama: 'Bibit Padi', kategori: 'Bibit', harga: 10000, satuan: 'Karung', stok: 10, gambar: 'assets/images/Benih_Padi.jpeg' ),
+    BarangTani(nama: 'Bibit Jagung', kategori: 'Bibit', harga: 8000, satuan: 'Karung', stok: 20, gambar: 'assets/images/Benih_Jagung.jpeg' ),
+    BarangTani(nama: 'Bibit Cabai', kategori: 'Bibit', harga: 15000, satuan: 'Karung', stok: 5, gambar: 'assets/images/Benih_Cabai.jpeg' ),
+    BarangTani(nama: 'Pupuk Organik', kategori: 'Pupuk', harga: 20000, satuan: 'Karung', stok: 3, gambar: 'assets/images/Pupuk_Organik.jpeg'),
+    BarangTani(nama: 'Tomat', kategori: 'Sayuran', harga: 25000, satuan: 'Bungkus', stok: 0, gambar: 'assets/images/Tomat.jpg' ),
+    BarangTani(nama: 'Wortel', kategori: 'Sayuran',harga: 30000,satuan: 'Bungkus',stok: 8, gambar: 'assets/images/Wortel.jpeg'),
+    BarangTani(nama: 'Pupuk NPK', kategori: 'Pupuk', harga: 18000, satuan: 'Karung', stok: 2, gambar: 'assets/images/Pupuk_NPK.jpg'),
+    BarangTani(nama: 'Bibit Bawang Merah', kategori: 'Bibit', harga: 12000, satuan: 'Karung', stok: 0, gambar: 'assets/images/Benih_Bawang_Merah.jpeg'),
+    BarangTani(nama: 'Cangkul', kategori: 'Alat', harga: 14000, satuan: 'Buah', stok: 6, gambar: 'assets/images/Cangkul.jpg'),
   ];
   @override
   void initState() {
@@ -52,7 +52,7 @@ class _MyAppState extends State<MyApp> {
     }).toList();
     return MaterialApp(
       home: Scaffold(
-        backgroundColor: const Color(0xFFEF5350),
+        backgroundColor: Colors.grey.shade200,
          endDrawer: Drawer(
           child: Container(
             decoration: const BoxDecoration(
@@ -81,6 +81,7 @@ class _MyAppState extends State<MyApp> {
         ),
         appBar: AppBar(
           backgroundColor: const Color(0xFFE53935),
+          actionsIconTheme: const IconThemeData(color: Colors.white),
           title : Row(children: const [
             Icon(Icons.eco, color: Colors.white),
             SizedBox(width: 8.0),
@@ -146,7 +147,7 @@ class _MyAppState extends State<MyApp> {
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text('Menampilkan ${hasilCari.length} barang',
-                  style: const TextStyle(color: Colors.white)),
+                  style: const TextStyle(color: Colors.deepOrange)),
                 ),
               ),
               const SizedBox(height: 6.0),
@@ -156,7 +157,7 @@ class _MyAppState extends State<MyApp> {
                 margin: const EdgeInsets.all(8.0),
                 padding: const EdgeInsets.all(6.0),
                 decoration : BoxDecoration(
-                  color: const Color(0xFFE53935),
+                  color: Colors.grey.shade300,
                   borderRadius: BorderRadius.circular(10.0),
                 ),
                 child: hasilCari.isEmpty
@@ -164,16 +165,16 @@ class _MyAppState extends State<MyApp> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.search_off, size: 48, color: Colors.white.withOpacity(0.8)),
+                        Icon(Icons.search_off, size: 48, color: Colors.deepOrange.withOpacity(0.8)),
                         const SizedBox(height: 12),
                         const Text(
                           'Barang tidak ditemukan',
-                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                          style: TextStyle(color: Colors.deepOrange, fontWeight: FontWeight.bold, fontSize: 16),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           'Coba ubah kata kunci atau pilih kategori lain',
-                          style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 12),
+                          style: TextStyle(color: Colors.deepOrange.withOpacity(0.8), fontSize: 12),
                           textAlign: TextAlign.center,
                         ),
                       ],
@@ -192,7 +193,7 @@ class _MyAppState extends State<MyApp> {
                     return GridView.builder(
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: kolom,
-                        childAspectRatio: 4 / 3,
+                        mainAxisExtent: 320,
                         crossAxisSpacing: 6,
                         mainAxisSpacing: 6,
                         ),
@@ -205,6 +206,7 @@ class _MyAppState extends State<MyApp> {
                             harga: barang.harga, 
                             satuan: barang.satuan, 
                             stok: barang.stok,
+                            gambar: barang.gambar,
                           );
                         },
                     );
