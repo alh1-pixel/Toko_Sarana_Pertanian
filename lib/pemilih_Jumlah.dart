@@ -55,7 +55,7 @@ class _PemilihJumlahState extends State<PemilihJumlah> {
           decoration: BoxDecoration(
             color: Colors.grey.shade100,
             borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: Colors.grey.shade300),
+            border: Border.all(color: Colors.green.shade300),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -162,13 +162,14 @@ class _PemilihJumlahState extends State<PemilihJumlah> {
   }) {
     return InkWell(
       onTap: onTap,
-      child: Container(
-        width: 22,
-        height: 22,
-        alignment: Alignment.center,
-        color: Colors.green.shade600,
-        child:  Icon(icon, color: Colors.white, size: 12),
-      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 2.0),
+        child: Icon(
+          icon,
+          color: Colors.green.shade700,
+          size: 18,
+        ),
+      )
     );
   }
 }
